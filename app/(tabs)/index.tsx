@@ -1,98 +1,305 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useMemo } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { moderateScale } from "react-native-size-matters";
+import { PassCBTIcon } from "../../components/design/PassCBTSvgIcons";
+import { useStudentStore } from "../../store/useStudentStore";
+import { useSettingsStore } from "../../store/useSettingsStore";
+import { useEnrolledSubjects } from "../../hooks/useTopics";
+import { useOverallAnalytics } from "../../hooks/useAnalytics";
+import { PassCBTTheme } from "../../constants/theme";
+import { PassCBTHeader } from "../../components/design/PassCBTHeader";
+import { HeroCard } from "../../components/design/HeroCard";
+import { HorizontalSubjectCard } from "../../components/design/HorizontalSubjectCard";
+import { GroupCard } from "../../components/design/GroupCard";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+interface TestModeDef {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: string;
+  iconBg: string;
+  accentColor: string;
+}
 
-export default function HomeScreen() {
+const EXAM_MODES: TestModeDef[] = [
+  {
+    id: "jamb",
+    title: "JAMB UTME Test",
+    subtitle: "40 min official past questions",
+    icon: "target",
+    iconBg: "rgba(95, 51, 225, 0.12)",
+    accentColor: "#5F33E1",
+  },
+  {
+    id: "waec",
+    title: "WAEC SSCE Test",
+    subtitle: "West African Senior Certificate",
+    icon: "school",
+    iconBg: "#E8F8F0",
+    accentColor: "#10B981",
+  },
+  {
+    id: "neco",
+    title: "NECO SSCE Test",
+    subtitle: "National Examinations Council",
+    icon: "book",
+    iconBg: "#FFF0E6",
+    accentColor: "#FF6633",
+  },
+  {
+    id: "speed",
+    title: "Speed Test Round",
+    subtitle: "Rapid-fire 10 min countdown",
+    icon: "lightning",
+    iconBg: "#FFEBF2",
+    accentColor: "#E91E63",
+  },
+  {
+    id: "prediction",
+    title: "2026 AI-Predicted",
+    subtitle: "Algorithmic high-yield forecasts",
+    icon: "sparkles",
+    iconBg: "rgba(95, 51, 225, 0.15)",
+    accentColor: "#5F33E1",
+  },
+  {
+    id: "knowledge",
+    title: "Topic Knowledge Quiz",
+    subtitle: "Targeted syllabus drills",
+    icon: "bulb",
+    iconBg: "#EBF5FF",
+    accentColor: "#0066FF",
+  },
+  {
+    id: "compete",
+    title: "National Competition",
+    subtitle: "Leaderboard ranked contest",
+    icon: "trophy",
+    iconBg: "#FEF7E6",
+    accentColor: "#F59E0B",
+  },
+  {
+    id: "post-utme",
+    title: "Post-UTME Screening",
+    subtitle: "University entrance aptitude",
+    icon: "university",
+    iconBg: "#FFEBF2",
+    accentColor: "#F43F5E",
+  },
+  {
+    id: "gce",
+    title: "GCE O-Level Test",
+    subtitle: "Private candidate past series",
+    icon: "certificate",
+    iconBg: "#F3E8FF",
+    accentColor: "#8B5CF6",
+  },
+];
+
+const PASTEL_VARIANTS: (keyof typeof PassCBTTheme.pastels)[] = [
+  "blue",
+  "peach",
+  "mint",
+  "pink",
+  "lavender",
+  "yellow",
+];
+
+export default function PracticeHomeScreen() {
+  const router = useRouter();
+  const theme = useSettingsStore((s) => s.theme);
+  const isDark = theme !== "light";
+  const colors = isDark ? PassCBTTheme.dark : PassCBTTheme.light;
+
+  const firstName = useStudentStore((s) => s.firstName);
+  const targetExam = useStudentStore((s) => s.targetExam);
+  const userId = useStudentStore((s) => s.userId) || "guest_student";
+
+  const { data: enrolledSubjects = [] } = useEnrolledSubjects(userId);
+  const { data: analytics } = useOverallAnalytics(userId);
+
+  const heroProgress = useMemo(() => {
+    if (analytics?.overall?.averageScore) {
+      return analytics.overall.averageScore;
+    }
+    return 75;
+  }, [analytics]);
+
+  const targetExamSlug = useMemo(() => {
+    return (targetExam || "jamb").toLowerCase().replace("_", "-");
+  }, [targetExam]);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      <PassCBTHeader name={firstName || "Student"} />
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <HeroCard
+          title="Your daily CBT goal is almost ready!"
+          buttonText="Start Practice"
+          percentage={heroProgress}
+          onButtonPress={() => router.push(`/tests/${targetExamSlug}`)}
+        />
+
+        {enrolledSubjects.length > 0 ? (
+          <View style={styles.sectionContainer}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>In Progress</Text>
+              <View style={[styles.countBadge, { backgroundColor: PassCBTTheme.brand.primarySurface }]}>
+                <Text style={styles.countText}>{enrolledSubjects.length}</Text>
+              </View>
+            </View>
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalScroll}
+            >
+              {enrolledSubjects.map((sub, idx) => {
+                const variant = PASTEL_VARIANTS[idx % PASTEL_VARIANTS.length];
+                const mockProgress = Math.min(95, Math.max(30, 45 + (idx * 15) % 50));
+
+                return (
+                  <HorizontalSubjectCard
+                    key={sub.id}
+                    category={`${targetExam} Prep`}
+                    title={`${sub.name} Practice`}
+                    icon="book"
+                    progress={mockProgress}
+                    variant={variant}
+                    onPress={() => router.push(`/tests/knowledge?subject=${sub.code}`)}
+                  />
+                );
+              })}
+            </ScrollView>
+          </View>
+        ) : (
+          <View style={styles.sectionContainer}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>In Progress</Text>
+            </View>
+            <TouchableOpacity
+              style={[styles.emptyEnrollCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+              onPress={() => router.push("/onboarding")}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.emptyEnrollIconBox, { backgroundColor: PassCBTTheme.brand.primarySurface }]}>
+                <PassCBTIcon name="add-circle" size={moderateScale(24)} color="#5F33E1" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.emptyEnrollTitle, { color: colors.text }]}>No Subjects Registered</Text>
+                <Text style={[styles.emptyEnrollSubtitle, { color: colors.textMuted }]}>
+                  Select your examination subjects to calibrate daily practice
+                </Text>
+              </View>
+              <PassCBTIcon name="chevron-forward" size={moderateScale(18)} color={colors.textMuted} />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Exam Modes</Text>
+            <View style={[styles.countBadge, { backgroundColor: PassCBTTheme.brand.primarySurface }]}>
+              <Text style={styles.countText}>{EXAM_MODES.length}</Text>
+            </View>
+          </View>
+
+          <View style={styles.groupsContainer}>
+            {EXAM_MODES.map((mode, idx) => {
+              const mockProgress = Math.min(92, Math.max(25, 35 + (idx * 11) % 55));
+
+              return (
+                <GroupCard
+                  key={mode.id}
+                  title={mode.title}
+                  subtitle={mode.subtitle}
+                  icon={mode.icon}
+                  iconBg={mode.iconBg}
+                  accentColor={mode.accentColor}
+                  progress={mockProgress}
+                  onPress={() => router.push(`/tests/${mode.id}`)}
+                />
+              );
+            })}
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  safeArea: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  scroll: {
+    paddingBottom: moderateScale(90),
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  sectionContainer: {
+    marginBottom: moderateScale(22),
+  },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: moderateScale(18),
+    marginBottom: moderateScale(14),
+    gap: moderateScale(8),
+  },
+  sectionTitle: {
+    fontSize: moderateScale(18),
+    fontFamily: PassCBTTheme.fonts.extraBold,
+  },
+  countBadge: {
+    width: moderateScale(22),
+    height: moderateScale(22),
+    borderRadius: moderateScale(11),
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  countText: {
+    color: "#5F33E1",
+    fontSize: moderateScale(11),
+    fontFamily: PassCBTTheme.fonts.bold,
+  },
+  horizontalScroll: {
+    paddingHorizontal: moderateScale(18),
+  },
+  emptyEnrollCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: moderateScale(18),
+    padding: moderateScale(16),
+    borderRadius: moderateScale(18),
+    borderWidth: 1,
+    gap: moderateScale(12),
+  },
+  emptyEnrollIconBox: {
+    width: moderateScale(42),
+    height: moderateScale(42),
+    borderRadius: moderateScale(21),
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyEnrollTitle: {
+    fontSize: moderateScale(14),
+    fontFamily: PassCBTTheme.fonts.semiBold,
+    marginBottom: moderateScale(2),
+  },
+  emptyEnrollSubtitle: {
+    fontSize: moderateScale(11),
+    fontFamily: PassCBTTheme.fonts.regular,
+    lineHeight: moderateScale(15),
+  },
+  groupsContainer: {
+    paddingHorizontal: moderateScale(18),
   },
 });

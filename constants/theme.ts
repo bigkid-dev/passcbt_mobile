@@ -1,53 +1,107 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+export const PassCBTTheme = {
+  brand: {
+    primary: "#5F33E1",
+    primaryDark: "#4924C7",
+    primaryLight: "#7D59F5",
+    primarySubtle: "rgba(95, 51, 225, 0.12)",
+    primarySurface: "#F0EDFC",
+  },
+  pastels: {
+    blue: {
+      bg: "#EBF5FF",
+      bar: "#0066FF",
+      iconBg: "#DBEAFE",
+      text: "#0066FF",
+    },
+    peach: {
+      bg: "#FFF0E6",
+      bar: "#FF6633",
+      iconBg: "#FFEDD5",
+      text: "#FF6633",
+    },
+    pink: {
+      bg: "#FFEBF2",
+      bar: "#E91E63",
+      iconBg: "#FCE7F3",
+      text: "#E91E63",
+    },
+    mint: {
+      bg: "#E8F8F0",
+      bar: "#10B981",
+      iconBg: "#D1FAE5",
+      text: "#10B981",
+    },
+    lavender: {
+      bg: "#F3E8FF",
+      bar: "#8B5CF6",
+      iconBg: "#EDE9FE",
+      text: "#8B5CF6",
+    },
+    yellow: {
+      bg: "#FEF7E6",
+      bar: "#F59E0B",
+      iconBg: "#FEF3C7",
+      text: "#F59E0B",
+    },
+  },
+  light: {
+    background: "#F8F9FE",
+    card: "#FFFFFF",
+    cardElevated: "#F3F4F9",
+    border: "#ECEEF5",
+    borderFocus: "#5F33E1",
+    text: "#1A1B2D",
+    textMuted: "#787A91",
+    textSubtle: "#A4A6B8",
+    tabBar: "#FFFFFF",
+    tabBarBorder: "rgba(0, 0, 0, 0.05)",
+  },
+  dark: {
+    background: "#0E1017",
+    card: "#151824",
+    cardElevated: "#1D2132",
+    border: "#24283B",
+    borderFocus: "#7D59F5",
+    text: "#F5F6FA",
+    textMuted: "#8E92A8",
+    textSubtle: "#5D6177",
+    tabBar: "#131622",
+    tabBarBorder: "rgba(255, 255, 255, 0.06)",
+  },
+  radius: {
+    sm: 10,
+    md: 16,
+    lg: 20,
+    xl: 26,
+    full: 999,
+  },
+  fonts: {
+    regular: "LexendDeca_400Regular",
+    medium: "LexendDeca_500Medium",
+    semiBold: "LexendDeca_600SemiBold",
+    bold: "LexendDeca_700Bold",
+    extraBold: "LexendDeca_800ExtraBold",
+  },
+} as const;
 
-import { Platform } from 'react-native';
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+export type ThemeColors = typeof PassCBTTheme.light;
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    text: PassCBTTheme.light.text,
+    background: PassCBTTheme.light.background,
+    tint: PassCBTTheme.brand.primary,
+    icon: PassCBTTheme.light.textMuted,
+    tabIconDefault: PassCBTTheme.light.textMuted,
+    tabIconSelected: PassCBTTheme.brand.primary,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    text: PassCBTTheme.dark.text,
+    background: PassCBTTheme.dark.background,
+    tint: PassCBTTheme.brand.primaryLight,
+    icon: PassCBTTheme.dark.textMuted,
+    tabIconDefault: PassCBTTheme.dark.textMuted,
+    tabIconSelected: PassCBTTheme.brand.primaryLight,
   },
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
